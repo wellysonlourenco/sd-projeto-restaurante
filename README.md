@@ -258,3 +258,15 @@ public class Cozinheiro extends Thread {
     }
 }
 ```
+
+Importação projeto no Eclipse
+----------------------------
+--- Passo a passo de como realizar a importação do projeto no eclipse
+https://www.youtube.com/watch?v=WjQpxCwKd0w
+
+
+Vai pedir usuario e senha para importar!
+Precisa gerar o token
+Click on settings Settings->Developer settings->Personal access tokens-> Generate new token.
+https://www.youtube.com/watch?v=H_uyu9pzUE0
+ 
