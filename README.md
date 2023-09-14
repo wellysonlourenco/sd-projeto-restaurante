@@ -44,6 +44,13 @@ trabalhando simultaneamente
 - Edmilson
 - Rafael
 
+
+
+
+
+
+ Classe principal do programa
+ --------------------------------------
 ```
 import java.util.LinkedList;
 import java.util.Queue;
@@ -52,8 +59,50 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-// Classe que representa um pedido
-class Pedido {
+public class SistemaDistribuido {
+    public static void main(String[] args) {
+        Queue<Pedido> filaPedidos = new LinkedList<>(); // Fila de pedidos compartilhada
+        int numClientes = new Random().nextInt(31) + 20; // Entre 20 e 50 clientes
+        int numCozinheiros = new Random().nextInt(6) + 5; // Entre 5 e 10 cozinheiros
+        Lock lock = new ReentrantLock(); // Lock para sincronização
+        Condition cozinheirosAvisados = lock.newCondition(); // Condição para notificar os cozinheiros
+
+        
+        // Inicialização de variáveis:
+
+        // - `filaPedidos`: É uma fila compartilhada onde os clientes colocarão seus pedidos e os cozinheiros os retirarão.
+        // - `numClientes`: É um número aleatório entre 20 e 50 que representa a quantidade de clientes que serão criados.
+        // - `numCozinheiros`: É um número aleatório entre 5 e 10 que representa a quantidade de cozinheiros que serão criados.
+        // - `lock`: É um objeto do tipo `Lock` usado para sincronização.
+        // - `cozinheirosAvisados`: É uma condição associada ao lock para notificar os cozinheiros quando há pedidos na fila.
+
+
+
+        // Iniciar as threads dos clientes
+        // O loop `for` inicia threads de clientes. Ele cria um número aleatório de clientes entre 20 e 50, conforme determinado por `numClientes`.
+        for (int i = 1; i <= numClientes; i++) {
+            new Cliente(filaPedidos, lock, cozinheirosAvisados).start(); 	// Inicia uma nova thread de cliente
+        }
+
+        // Iniciar as threads dos cozinheiros
+        // O loop `for` inicia threads de cozinheiros. Ele cria um número aleatório de cozinheiros entre 5 e 10, conforme determinado por `numCozinheiros`.
+        for (int i = 1; i <= numCozinheiros; i++) {
+            new Cozinheiro(filaPedidos, lock, cozinheirosAvisados).start(); // Inicia uma nova thread de cozinheiro
+        }
+
+        // Exibir mensagem após o término do loop de iniciação dos clientes
+        System.out.println("Todas as threads de clientes foram iniciadas.");
+              
+
+    }
+}
+```
+
+Pedido.java (Classe Pedido):
+ --------------------------------------
+
+```
+public class Pedido {
     private String nome;
     private long tempoPreparo;
     private String categoria;
@@ -64,21 +113,46 @@ class Pedido {
         this.categoria = categoria;
     }
 
-    // Getters para os atributos
-
     // Método para simular a preparação do pedido
     public void preparar() {
         try {
-            Thread.sleep(tempoPreparo);
+            Thread.sleep(tempoPreparo); // tempo de preparo aguardando
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-}
 
-// Classe que representa um cliente
-class Cliente extends Thread {
-    private static final String[] ITENS_CARDÁPIO = {"Item1", "Item2", "Item3", /* ... */, "Item10"};
+    // Getters para os atributos
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public long getTempoPreparo() {
+		return tempoPreparo;
+	}
+
+```
+
+Cliente.java (Classe Cliente):
+---------------------------------
+
+```
+import java.util.Queue;
+import java.util.Random;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+
+public class Cliente extends Thread {
+	
+	
+    private static final String[] ITENS_CARDÁPIO = {
+    		"Batata Frita", "Arroz Carreteiro", "Espetinho", "Pudim",
+    		"Pizza", "Pastel", "Brigadeiro", "Sonho", "Bolo", "Sanduiche"};
+    
     private static final String[] CATEGORIAS = {"entrada", "prato principal", "sobremesa"};
 
     private Queue<Pedido> filaPedidos; // Fila de pedidos compartilhada
@@ -104,10 +178,12 @@ class Cliente extends Thread {
             // Início da seção crítica
             lock.lock();
             try {
+            	// Lógica do cliente
                 filaPedidos.add(pedido); // Adicionar pedido à fila
                 System.out.println("Cliente " + this.getName() + " fez um pedido: " + pedido.getNome());
                 cozinheirosAvisados.signal(); // Notificar os cozinheiros que há um novo pedido
             } finally {
+            	// Cliente terminou, sinalize que terminou
                 lock.unlock();
             }
             // Fim da seção crítica
@@ -129,16 +205,26 @@ class Cliente extends Thread {
     }
 }
 
-// Classe que representa um cozinheiro
-class Cozinheiro extends Thread {
-    private Queue<Pedido> filaPedidos; // Fila de pedidos compartilhada
-    private Lock lock; // Lock para sincronização
-    private Condition cozinheirosAvisados; // Condição para notificar os cozinheiros
+```
+
+Cozinheiro.java (Classe Cozinheiro):
+---------------------------------------------
+
+```
+import java.util.Queue;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+
+public class Cozinheiro extends Thread {
+    private Queue<Pedido> filaPedidos; 					// Fila de pedidos compartilhada
+    private Lock lock; 									// Lock para sincronização
+    private Condition cozinheirosAvisados; 				// Condição para notificar os cozinheiros
 
     public Cozinheiro(Queue<Pedido> filaPedidos, Lock lock, Condition cozinheirosAvisados) {
-        this.filaPedidos = filaPedidos;
-        this.lock = lock;
-        this.cozinheirosAvisados = cozinheirosAvisados;
+        // Construtor da classe Cozinheiro, inicializando as variáveis
+    	this.filaPedidos = filaPedidos;    				// Inicializa a fila de pedidos compartilhada
+        this.lock = lock;        						// Inicializa o lock para sincronização
+        this.cozinheirosAvisados = cozinheirosAvisados; // Inicializa a condição de notificação
     }
 
     @Override
@@ -147,158 +233,28 @@ class Cozinheiro extends Thread {
             Pedido pedido;
 
             // Início da seção crítica
-            lock.lock();
+            lock.lock();								// Bloqueia o lock para acesso exclusivo à fila de pedidos
             try {
                 while (filaPedidos.isEmpty()) {
                     try {
-                        cozinheirosAvisados.await(); // Aguardar se a fila estiver vazia
+                        cozinheirosAvisados.await(); 	// Aguardar se a fila estiver vazia
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
-                pedido = filaPedidos.poll(); // Retirar um pedido da fila
+                pedido = filaPedidos.poll(); 			// Retirar um pedido da fila
             } finally {
-                lock.unlock();
+                lock.unlock();							// Libera o lock
             }
             // Fim da seção crítica
 
-            System.out.println("Cozinheiro " + this.getName() + " está preparando " + pedido.getNome());
+            
+            
+            // Processamento do pedido
+            System.out.println("Cozinheiro " + this.getName() + " esta preparando " + pedido.getNome());
             pedido.preparar(); // Preparar o pedido
             System.out.println("Pedido " + pedido.getNome() + " preparado pelo cozinheiro " + this.getName());
         }
     }
 }
-
-// Classe principal do programa
-public class SistemaDistribuido {
-    public static void main(String[] args) {
-        Queue<Pedido> filaPedidos = new LinkedList<>(); // Fila de pedidos compartilhada
-        int numClientes = new Random().nextInt(31) + 20; // Entre 20 e 50 clientes
-        int numCozinheiros = new Random().nextInt(6) + 5; // Entre 5 e 10 cozinheiros
-        Lock lock = new ReentrantLock(); // Lock para sincronização
-        Condition cozinheirosAvisados = lock.newCondition(); // Condição para notificar os cozinheiros
-
-        // Iniciar as threads dos clientes
-        for (int i = 1; i <= numClientes; i++) {
-            new Cliente(filaPedidos, lock, cozinheirosAvisados).start();
-        }
-
-        // Iniciar as threads dos cozinheiros
-        for (int i = 1; i <= numCozinheiros; i++) {
-            new Cozinheiro(filaPedidos, lock, cozinheirosAvisados).start();
-        }
-    }
-}
-
-
---------------------------------------
-Pedido.java (Classe Pedido):
-public class Pedido {
-    private String nome;
-    private long tempoPreparo;
-    private String categoria;
-
-    public Pedido(String nome, long tempoPreparo, String categoria) {
-        this.nome = nome;
-        this.tempoPreparo = tempoPreparo;
-        this.categoria = categoria;
-    }
-
-    // Getters para os atributos
-
-    // Método para simular a preparação do pedido
-    public void preparar() {
-        try {
-            Thread.sleep(tempoPreparo);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
----------------------------------
-Cliente.java (Classe Cliente):
-import java.util.Queue;
-import java.util.Random;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-
-public class Cliente extends Thread {
-    private static final String[] ITENS_CARDÁPIO = {"Item1", "Item2", "Item3", /* ... */, "Item10"};
-    private static final String[] CATEGORIAS = {"entrada", "prato principal", "sobremesa"};
-
-    private Queue<Pedido> filaPedidos; // Fila de pedidos compartilhada
-    private Random random = new Random();
-    private Lock lock; // Lock para sincronização
-    private Condition cozinheirosAvisados; // Condição para notificar os cozinheiros
-
-    public Cliente(Queue<Pedido> filaPedidos, Lock lock, Condition cozinheirosAvisados) {
-        this.filaPedidos = filaPedidos;
-        this.lock = lock;
-        this.cozinheirosAvisados = cozinheirosAvisados;
-    }
-
-    @Override
-    public void run() {
-        // Implementação da classe Cliente (código anterior)
-        // ...
-    }
-}
----------------------------------------------
-Cozinheiro.java (Classe Cozinheiro):
-import java.util.Queue;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-
-public class Cozinheiro extends Thread {
-    private Queue<Pedido> filaPedidos; // Fila de pedidos compartilhada
-    private Lock lock; // Lock para sincronização
-    private Condition cozinheirosAvisados; // Condição para notificar os cozinheiros
-
-    public Cozinheiro(Queue<Pedido> filaPedidos, Lock lock, Condition cozinheirosAvisados) {
-        this.filaPedidos = filaPedidos;
-        this.lock = lock;
-        this.cozinheirosAvisados = cozinheirosAvisados;
-    }
-
-    @Override
-    public void run() {
-        // Implementação da classe Cozinheiro (código anterior)
-        // ...
-    }
-}
---------------------------------------------
-SistemaDistribuido.java (Classe Principal):
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-public class SistemaDistribuido {
-    public static void main(String[] args) {
-        Queue<Pedido> filaPedidos = new LinkedList<>(); // Fila de pedidos compartilhada
-        int numClientes = new Random().nextInt(31) + 20; // Entre 20 e 50 clientes
-        int numCozinheiros = new Random().nextInt(6) + 5; // Entre 5 e 10 cozinheiros
-        Lock lock = new ReentrantLock(); // Lock para sincronização
-        Condition cozinheirosAvisados = lock.newCondition(); // Condição para notificar os cozinheiros
-
-        // Iniciar as threads dos clientes
-        for (int i = 1; i <= numClientes; i++) {
-            new Cliente(filaPedidos, lock, cozinheirosAvisados).start();
-        }
-
-        // Iniciar as threads dos cozinheiros
-        for (int i = 1; i <= numCozinheiros; i++) {
-            new Cozinheiro(filaPedidos, lock, cozinheirosAvisados).start();
-        }
-    }
-}
--------------------------------------------
-
-
-
-
-
 ```
