@@ -42,6 +42,7 @@ trabalhando simultaneamente
 - wellyson
 - Benedito
 - Edmilson
+- Rafael
 
 ```
 import java.util.LinkedList;
