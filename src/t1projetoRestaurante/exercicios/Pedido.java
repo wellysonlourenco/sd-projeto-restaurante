@@ -16,7 +16,7 @@ public class Pedido {
     // Método para simular a preparação do pedido
     public void preparar() {
         try {
-            Thread.sleep(tempoPreparo);
+            Thread.sleep(tempoPreparo); // tempo de preparo aguardando
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -58,6 +58,9 @@ public class Pedido {
 		this.categoria = categoria;
 	}
     
-
-	
 }
+
+
+
+
+

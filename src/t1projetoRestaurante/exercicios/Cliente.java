@@ -6,6 +6,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 public class Cliente extends Thread {
+	
+	
     private static final String[] ITENS_CARDÁPIO = {
     		"Batata Frita", "Arroz Carreteiro", "Espetinho", "Pudim",
     		"Pizza", "Pastel", "Brigadeiro", "Sonho", "Bolo", "Sanduiche"};
@@ -35,10 +37,12 @@ public class Cliente extends Thread {
             // Início da seção crítica
             lock.lock();
             try {
+            	// Lógica do cliente
                 filaPedidos.add(pedido); // Adicionar pedido à fila
                 System.out.println("Cliente " + this.getName() + " fez um pedido: " + pedido.getNome());
                 cozinheirosAvisados.signal(); // Notificar os cozinheiros que há um novo pedido
             } finally {
+            	// Cliente terminou, sinalize que terminou
                 lock.unlock();
             }
             // Fim da seção crítica
