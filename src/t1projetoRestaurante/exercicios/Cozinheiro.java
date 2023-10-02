@@ -47,7 +47,7 @@ public class Cozinheiro extends Thread {
             System.out.println(">>> Cozinheiro " + this.getName() + " esta preparando " + pedido.getNome() + " do cliente " + pedido.getCliente().getName() + " (Tempo de Preparo: " + pedido.getTempoPreparo() + "ms)");
 
             pedido.preparar(); // Preparar o pedido
-            System.out.println("Pedido " + pedido.getNome() + " cliente " +" preparado pelo cozinheiro " + this.getName());
+            System.out.println("      Pedido " + pedido.getNome() +  " do cliente " + pedido.getCliente().getName() + " esta pronto ");
         }
     }
 }

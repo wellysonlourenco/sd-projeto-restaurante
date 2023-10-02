@@ -36,6 +36,8 @@ public class Cliente extends Thread {
     private Random random = new Random();
     private Lock lock;
     private Condition cozinheirosAvisados;
+    private static int totalPedidos = 0; // Variável para acompanhar o número total de pedidos
+
 
     public Cliente(Queue<Pedido> filaPedidos, Lock lock, Condition cozinheirosAvisados) {
         this.filaPedidos = filaPedidos;

@@ -5,6 +5,8 @@ public class Pedido {
     private long tempoPreparo;
     private String categoria;
     private Cliente cliente; // Adicione um atributo para o cliente
+    private Cozinheiro cozinheiro; // Adicione um campo para o cozinheiro
+
 
 
     public Pedido(String nome, long tempoPreparo, String categoria, Cliente cliente) {
@@ -13,10 +15,21 @@ public class Pedido {
         this.categoria = categoria;
         this.cliente = cliente;
     }
-
     
+    
+    
+    
+ // Adicione um método para definir o cozinheiro associado ao pedido
+    public void setCozinheiro(Cozinheiro cozinheiro) {
+        this.cozinheiro = cozinheiro;
+    }
 
-    // Método para simular a preparação do pedido
+
+    public Cozinheiro getCozinheiro() {
+		return cozinheiro;
+	}
+
+	// Método para simular a preparação do pedido
     public void preparar() {
         try {
             Thread.sleep(tempoPreparo); // tempo de preparo aguardando
