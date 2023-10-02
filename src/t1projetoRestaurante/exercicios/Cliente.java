@@ -32,7 +32,7 @@ public class Cliente extends Thread {
             long tempoPreparo = random.nextInt(3900) + 100; // Entre 100 e 4000 milissegundos
             String categoria = CATEGORIAS[i];
 
-            Pedido pedido = new Pedido(nomeItem, tempoPreparo, categoria);
+            Pedido pedido = new Pedido(nomeItem, tempoPreparo, categoria, this);
 
             // Início da seção crítica
             lock.lock();
@@ -61,5 +61,8 @@ public class Cliente extends Thread {
                 e.printStackTrace();
             }
         }
+        
+        
     }
+
 }

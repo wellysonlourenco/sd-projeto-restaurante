@@ -41,7 +41,7 @@ public class SistemaDistribuido {
         }
 
         // Exibir mensagem após o término do loop de iniciação dos clientes
-        System.out.println("Todas as threads de clientes foram iniciadas.");
+        //System.out.println("Todas as threads de clientes foram iniciadas.");
               
 
     }

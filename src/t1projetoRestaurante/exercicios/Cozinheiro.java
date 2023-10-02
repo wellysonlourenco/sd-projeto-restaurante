@@ -9,6 +9,9 @@ public class Cozinheiro extends Thread {
     private Lock lock; 									// Lock para sincronização
     private Condition cozinheirosAvisados; 				// Condição para notificar os cozinheiros
 
+    
+    
+    
     public Cozinheiro(Queue<Pedido> filaPedidos, Lock lock, Condition cozinheirosAvisados) {
         // Construtor da classe Cozinheiro, inicializando as variáveis
     	this.filaPedidos = filaPedidos;    				// Inicializa a fila de pedidos compartilhada
@@ -40,9 +43,9 @@ public class Cozinheiro extends Thread {
             
             
             // Processamento do pedido
-            System.out.println("Cozinheiro " + this.getName() + " esta preparando " + pedido.getNome());
+            System.out.println(">>> Cozinheiro " + this.getName() + " esta preparando " + pedido.getNome() + " do cliente " + pedido.getCliente().getName());
             pedido.preparar(); // Preparar o pedido
-            System.out.println("Pedido " + pedido.getNome() + " preparado pelo cozinheiro " + this.getName());
+            System.out.println("Pedido " + pedido.getNome() + " cliente " +" preparado pelo cozinheiro " + this.getName());
         }
     }
 }

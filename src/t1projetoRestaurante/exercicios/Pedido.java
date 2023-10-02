@@ -4,11 +4,14 @@ public class Pedido {
     private String nome;
     private long tempoPreparo;
     private String categoria;
+    private Cliente cliente; // Adicione um atributo para o cliente
 
-    public Pedido(String nome, long tempoPreparo, String categoria) {
+
+    public Pedido(String nome, long tempoPreparo, String categoria, Cliente cliente) {
         this.nome = nome;
         this.tempoPreparo = tempoPreparo;
         this.categoria = categoria;
+        this.cliente = cliente;
     }
 
     
@@ -57,6 +60,20 @@ public class Pedido {
 	public void setCategoria(String categoria) {
 		this.categoria = categoria;
 	}
+
+
+
+	public Cliente getCliente() {
+		return cliente;
+	}
+
+
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
+	
+	
     
 }
 
