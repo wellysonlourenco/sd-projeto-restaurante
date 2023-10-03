@@ -9,6 +9,20 @@ import java.util.Random;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
+
+/*Principais Componentes:
+
+Classe Cliente:
+
+Representa os clientes que fazem pedidos.
+Gera aleatoriamente um item do cardápio de acordo com a categoria.
+Cada pedido inclui nome, tempo de preparo e categoria.
+Mantém um contador de pedidos em execução e exibe uma mensagem quando todos os pedidos são concluídos.
+Cada cliente faz três pedidos, um de cada categoria (entrada, prato principal, sobremesa).
+*/
+
+
+
 public class Cliente extends Thread {
     private static final String[] ITENS_CARDÁPIO = {
         "Batata Frita", "Arroz Carreteiro", "Espetinho", "Pudim",
@@ -36,7 +50,6 @@ public class Cliente extends Thread {
     private Random random = new Random();
     private Lock lock;
     private Condition cozinheirosAvisados;
-    private static int totalPedidos = 0; // Variável para acompanhar o número total de pedidos
 
 
     public Cliente(Queue<Pedido> filaPedidos, Lock lock, Condition cozinheirosAvisados) {

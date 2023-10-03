@@ -25,11 +25,17 @@ public class Cozinheiro extends Thread {
             Pedido pedido;
 
             // Início da seção crítica
+            //A seção crítica é protegida pelo lock (lock.lock() e lock.unlock()) para garantir que apenas um cozinheiro por vez acesse a fila de pedidos.
+
             lock.lock();								// Bloqueia o lock para acesso exclusivo à fila de pedidos
             try {
                 while (filaPedidos.isEmpty()) {
                     try {
                         cozinheirosAvisados.await(); 	// Aguardar se a fila estiver vazia
+                        //Dentro da seção crítica, o cozinheiro verifica se a fila de pedidos (filaPedidos) está vazia.
+                        //Se estiver vazia, o cozinheiro espera (cozinheirosAvisados.await()) 
+                        //até que algum cliente coloque um pedido na fila.
+
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -46,6 +52,7 @@ public class Cozinheiro extends Thread {
             //System.out.println(">>> Cozinheiro " + this.getName() + " esta preparando " + pedido.getNome() + " do cliente " + pedido.getCliente().getName());
             System.out.println(">>> Cozinheiro " + this.getName() + " esta preparando " + pedido.getNome() + " do cliente " + pedido.getCliente().getName() + " (Tempo de Preparo: " + pedido.getTempoPreparo() + "ms)");
 
+            //O loop continua, e o cozinheiro verifica novamente a fila de pedidos, repetindo o processo.
             pedido.preparar(); // Preparar o pedido
             System.out.println("      Pedido " + pedido.getNome() +  " do cliente " + pedido.getCliente().getName() + " esta pronto ");
         }
